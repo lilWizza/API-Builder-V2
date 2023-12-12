@@ -6,7 +6,6 @@ class Project_checker {
     public function __construct() {
         $this->get_project_name();
         $this->find_directory();
-        die();
     }
     public function get_project_name() {
         $data = file_get_contents(".env");
@@ -21,6 +20,5 @@ class Project_checker {
         {
 
         }
-        die();
     }
 }

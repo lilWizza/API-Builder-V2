@@ -21,7 +21,15 @@
             <option value="codeigniter">Codeigniter</option>
           </select>
         </div>
-
+        <!--choose algo-->
+        <div class="input">
+          <label for="planguage">Algorithm </label>
+          <select class="form-control" v-model="algorithm">
+            <option value="cosine" selected>Cosine Similarity</option>
+            <option value="similar_text">PHP Similar Text</option>
+            <option value="levenshtein">Levenshtein</option>
+          </select>
+        </div>
         <h5 class="text-center">Model Setup</h5>
         <hr />
 
@@ -69,8 +77,21 @@
           </button>
         </div>
         <div class="submit">
-          <button @click="onSubmit">Recommend</button>
+          <button @click="matchJson">Recommend</button>
         </div>
+       <hr>
+        <div class="input hobbies" id="build_div"  style="display: none">
+          <button
+            class="btn btn-default"
+            id="build_btn"
+            @click="onSubmit"
+           
+          >
+            Build Recommended project
+          </button>
+        </div>
+        <div id="summary"></div>
+<hr>
         <div class="input hobbies">
           <button
             class="btn btn-default"
@@ -101,6 +122,7 @@ export default {
       visible: false,
       appName: "Blog",
       programmingLanguage: "laravel",
+      algorithm: "cosine",
       form: {
         table_name: "Abc",
         model_fields: "",
@@ -204,6 +226,7 @@ export default {
       let config = {
         app_name: this.appName,
         programming_langauge: this.programmingLanguage,
+        algorithm : this.algorithm, 
       };
 
       let formData = {
@@ -213,7 +236,7 @@ export default {
       let id = (this.random = Math.floor(Math.random() * 1000000000) + 1);
 
       let self = this;
-
+      console.log(formData)
       axios
         .post("http://localhost:9000/recommend/", formData)
         .then(function (response) {
@@ -230,12 +253,66 @@ export default {
           // console.log(err);
           let d_btn = document.getElementById("download_btn");
           d_btn.style.display = "none";
-          alert("Oops ! Something Went wrong ");
+          alert("Oops ! No Match Found. Better try next time. ");
         });
     },
     downloadProject() {
       window.location.href = ("http://localhost:9000/download_zip/" + this.zip_path.split(".")[0])
     },
+    matchJson(){
+      this.visible = true;
+      let config = {
+        app_name: this.appName,
+        programming_langauge: this.programmingLanguage,
+        algorithm : this.algorithm, 
+      };
+
+      let formData = {
+        config: config,
+        data: this.data,
+      };
+      let id = (this.random = Math.floor(Math.random() * 1000000000) + 1);
+
+      let self = this;
+      console.log(formData)
+      axios
+        .post("http://localhost:9000/match-json/", formData)
+        .then(function (response) {
+          self.visible = false;
+          
+         
+          if (response.data.highest_point <=0 ){
+            console.log("Project Match", response.data);
+            summary.innerHTML = `<p>No Match found for the given JSON.<p>`;
+            }else{
+              console.log("Project Match", response.data);
+          let build_btn = document.getElementById("build_div");
+          build_btn.style.display = "block";
+          let summary = document.getElementById('summary');
+              summary.innerHTML = `
+          <h4> Recommendation  </h4>
+          <p style="font-size:25px">Algorithm: ${response.data.algorithm} </p>
+          <p style="font-size:25px">Selected Dataset File: ${response.data.file_name} </p>
+          <p style="font-size:25px"> Highest Point Gained :  ${response.data.highest_point}  ${response.data.highest_section} </p>
+          <hr>
+          <p style="font-size:25px"> Text Matching: <br> Algorithm Iterations. : ${response.data.fields} </p>
+         
+            <hr>
+          <h4> Configuration </h4>
+           ${response.data.conf}
+          `
+          }
+         
+        })
+        .catch((err) => {
+          self.visible = false;
+
+          // console.log(err);
+          let d_btn = document.getElementById("download_btn");
+          d_btn.style.display = "none";
+          alert("Oops ! No Match Found. Better try next time. ");
+        });
+    }
   },
 };
 </script>
@@ -336,5 +413,12 @@ export default {
   left: 50%;
   transform: translate(-50%, -50%);
   height: 100px;
+}
+code {
+  font-family: Consolas,"courier new";
+  color: crimson;
+  background-color: #f1f1f1;
+  padding: 2px;
+  font-size: 105%;
 }
 </style>

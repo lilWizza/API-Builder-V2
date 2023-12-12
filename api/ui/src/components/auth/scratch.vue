@@ -586,7 +586,7 @@ export default {
           guarded: guarded_fields_needed,
           fillable: fillable_field_needed,
           mapping: [],
-          timestamps: timestamp,
+          timestamps: timestamp == undefined ? false : timestamp,
           view: view_arr,
           add: add_arr,
           edit: edit_arr,
@@ -635,7 +635,6 @@ export default {
       let id = (this.random = Math.floor(Math.random() * 1000000000) + 1);
 
       let self = this;
-
       axios
         .post("http://localhost:9000/save/" + id, formData)
         .then(function (response) {

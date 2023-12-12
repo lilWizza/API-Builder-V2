@@ -9,8 +9,8 @@ include_once 'Zip_builder.php';
 /**
  * Class: Application Builder
  * Description: Build the complete Project
- * @Author : Samyam Kafle / Niraj Ghimire 
- * Copyright: 2021
+ * @Author : lilWizza
+ * Copyright: 2023
  */
 class Application_builder extends Builder
 {
@@ -184,7 +184,7 @@ function recursive_remove($dir)
         {
             if ($file != '.' && $file != '..')
             {
-                system('rm -rf ' . escapeshellarg($dir . '/' . $file));
+                system('rmdir /s /q ' . escapeshellarg($dir . '/' . $file));
             }
         }
     }
